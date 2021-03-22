@@ -2,12 +2,14 @@ import React, { useState, useContext } from 'react';
 import Page from './Page';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
-import ExampleContext from '../ExampleContext';
+import DispatchContext from '../DispatchContext';
+import StateContext from '../StateContext';
 
 function CreatePost(props) {
   const [title, setTitle] = useState();
   const [body, setBody] = useState();
-  const { addFlashMessage } = useContext(ExampleContext);
+  const appDispatch = useContext(DispatchContext);
+  const appState = useContext(StateContext);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -15,10 +17,10 @@ function CreatePost(props) {
       const response = await axios.post('/create-post', {
         title,
         body,
-        token: localStorage.getItem('complexAppToken'),
+        token: appState.user.token,
       });
       // redirect to new post url
-      addFlashMessage('New post created successfully!');
+      appDispatch({ type: 'flashmessage', value: 'New post created!' });
       props.history.push(`post/${response.data}`);
       console.log('New post created!');
     } catch (error) {

@@ -18,6 +18,7 @@ import Terms from './components/Terms';
 import CreatePost from './components/CreatePost';
 import ViewSinglePost from './components/ViewSinglePost';
 import FlashMessages from './components/FlashMessages';
+import Profile from './components/Profile';
 
 function Main() {
   // retrieve token from local storage (if it exists) and create initial boolean value
@@ -68,6 +69,9 @@ function Main() {
           <Switch>
             <Route path='/' exact>
               {state.loggedIn ? <Home /> : <HomeGuest />}
+            </Route>
+            <Route path='/profile/:username'>
+              <Profile />
             </Route>
             <Route path='/post/:id'>
               <ViewSinglePost />

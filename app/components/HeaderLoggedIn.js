@@ -20,7 +20,7 @@ function HeaderLoggedIn(props) {
         <i className='fas fa-comment'></i>
         <span className='chat-count-badge text-white'></span>
       </span>
-      <Link to='#' className='mr-2'>
+      <Link to={`/profile/${appState.user.username}`} className='mr-2'>
         <img src={appState.user.avatar} alt='' className='small-header-avatar' />
       </Link>
       <Link to='/create-post' className='btn btn-sm btn-success mr-2'>

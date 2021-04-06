@@ -19,6 +19,8 @@ import CreatePost from './components/CreatePost';
 import ViewSinglePost from './components/ViewSinglePost';
 import FlashMessages from './components/FlashMessages';
 import Profile from './components/Profile';
+import EditPost from './components/EditPost';
+import NotFound from './components/NotFound';
 
 function Main() {
   // retrieve token from local storage (if it exists) and create initial boolean value
@@ -73,17 +75,24 @@ function Main() {
             <Route path='/profile/:username'>
               <Profile />
             </Route>
-            <Route path='/post/:id'>
+            <Route path='/post/:id' exact>
               <ViewSinglePost />
             </Route>
-            <Route path='/create-post' exact>
+            <Route path='/post/:id/edit' exact>
+              <EditPost />
+            </Route>
+            <Route path='/create-post'>
               <CreatePost />
             </Route>
-            <Route path='/about-us' exact>
+            <Route path='/about-us'>
               <About />
             </Route>
-            <Route path='/terms' exact>
+            <Route path='/terms'>
               <Terms />
+            </Route>
+            {/* fallback route at end */}
+            <Route>
+              <NotFound />
             </Route>
           </Switch>
           <Footer />

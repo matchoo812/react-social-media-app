@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Page from './Page';
+import LoadingIcon from './LoadingIcon';
+import ReactMarkdown from 'react-markdown';
+import ReactTooltip from 'react-tooltip';
+import NotFound from './NotFound';
 
 function ViewSinglePost() {
   const { id } = useParams();
@@ -9,9 +13,12 @@ function ViewSinglePost() {
   const [post, setPost] = useState();
 
   useEffect(() => {
+    // create cancel token to pass along in get request in case the use navigates away
+    const ourRequest = axios.CancelToken.source();
+
     async function fetchPost() {
       try {
-        const response = await axios.get(`/post/${id}`);
+        const response = await axios.get(`/post/${id}`, { cancelToken: ourRequest.token });
         // console.log(response.data);
         setPost(response.data);
         setIsLoading(false);
@@ -20,9 +27,22 @@ function ViewSinglePost() {
       }
     }
     fetchPost();
+    // cleanup function when component is unmounted
+    return () => {
+      ourRequest.cancel();
+    };
   }, []);
 
-  if (isLoading) return <Page title='...'>Loading...</Page>;
+  if (!isLoading && !post) {
+    return <NotFound />;
+  }
+
+  if (isLoading)
+    return (
+      <Page title='...'>
+        <LoadingIcon />
+      </Page>
+    );
 
   const date = new Date(post.createdDate);
   const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
@@ -32,12 +52,19 @@ function ViewSinglePost() {
       <div className='d-flex justify-content-between'>
         <h2>{post.title}</h2>
         <span className='pt-2'>
-          <Link to='#' className='text-primary mr-2' title='Edit'>
+          <Link
+            to={`/post/${post._id}/edit`}
+            data-tip='Edit'
+            data-for='edit'
+            className='text-primary mr-2'
+          >
             <i className='fas fa-edit'></i>
           </Link>
-          <a className='delete-post-button text-danger' title='Delete'>
+          <ReactTooltip id='edit' className='custom-tooltip' />{' '}
+          <a className='delete-post-button text-danger' data-tip='Delete' data-for='delete'>
             <i className='fas fa-trash'></i>
           </a>
+          <ReactTooltip id='delete' className='custom-tooltip' />{' '}
         </span>
       </div>
 
@@ -49,7 +76,12 @@ function ViewSinglePost() {
         {formattedDate}
       </p>
 
-      <div className='body-content'>{post.body}</div>
+      <div className='body-content'>
+        <ReactMarkdown
+          children={post.body}
+          allowedTypes={['paragraph', 'strong', 'emphasis', 'text', 'heading', 'list', 'listItem']}
+        />
+      </div>
     </Page>
   );
 }

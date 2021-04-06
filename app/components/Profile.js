@@ -16,10 +16,16 @@ function Profile() {
     counts: { postCount: '', followerCount: '', followingCount: '' },
   });
 
+  const ourRequest = axios.CancelToken.source();
+
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.post(`/profile/${username}`, { token: appState.user.token });
+        const response = await axios.post(
+          `/profile/${username}`,
+          { token: appState.user.token },
+          { cancelToken: ourRequest.token }
+        );
         // console.log(response.data);
         setProfileData(response.data);
       } catch (error) {
@@ -27,6 +33,9 @@ function Profile() {
       }
     }
     fetchData();
+    return () => {
+      ourRequest.cancel();
+    };
   }, []);
 
   return (

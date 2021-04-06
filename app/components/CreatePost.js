@@ -22,7 +22,6 @@ function CreatePost(props) {
       // redirect to new post url
       appDispatch({ type: 'flashmessage', value: 'New post created!' });
       props.history.push(`post/${response.data}`);
-      console.log('New post created!');
     } catch (error) {
       console.log(error);
     }

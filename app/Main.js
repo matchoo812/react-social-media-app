@@ -2,6 +2,7 @@ import React, { useState, useEffect, useReducer } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { useImmerReducer } from 'use-immer';
+import { CSSTransition } from 'react-transition-group';
 import axios from 'axios';
 axios.defaults.baseURL = 'http://localhost:8080';
 
@@ -21,6 +22,7 @@ import FlashMessages from './components/FlashMessages';
 import Profile from './components/Profile';
 import EditPost from './components/EditPost';
 import NotFound from './components/NotFound';
+import Search from './components/Search';
 
 function Main() {
   // retrieve token from local storage (if it exists) and create initial boolean value
@@ -31,6 +33,7 @@ function Main() {
       token: localStorage.getItem('complexAppToken'),
       username: localStorage.getItem('complexAppUsername'),
       avatar: localStorage.getItem('complexAppAvatar'),
+      searchIsOpen: false,
     },
   };
 
@@ -45,6 +48,12 @@ function Main() {
         break;
       case 'flashmessage':
         draft.flashMessages.push(action.value);
+        break;
+      case 'openSearch':
+        draft.searchIsOpen = true;
+        break;
+      case 'closeSearch':
+        draft.searchIsOpen = false;
         break;
     }
   }
@@ -95,6 +104,14 @@ function Main() {
               <NotFound />
             </Route>
           </Switch>
+          <CSSTransition
+            timeout={330}
+            in={state.searchIsOpen}
+            classNames='search-overlay'
+            unmountOnExit
+          >
+            <Search />
+          </CSSTransition>
           <Footer />
         </BrowserRouter>
       </DispatchContext.Provider>

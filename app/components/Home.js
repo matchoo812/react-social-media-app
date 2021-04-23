@@ -6,6 +6,7 @@ import StateContext from '../StateContext';
 
 import Page from './Page';
 import LoadingIcon from './LoadingIcon';
+import Post from './Post';
 
 function Home() {
   const appState = useContext(StateContext);
@@ -49,25 +50,7 @@ function Home() {
           <h2 className='text-center mb-4'>The Latest from Accounts You Follow</h2>
           <div className='list-group'>
             {state.feed.map(post => {
-              const date = new Date(post.createdDate);
-              const formattedDate = `${
-                date.getMonth() + 1
-              }/${date.getDate()}/${date.getFullYear()}`;
-              return (
-                <Link
-                  onClick={() => appDispatch({ type: 'closeSearch' })}
-                  to={`/post/${post._id}`}
-                  key={post._id}
-                  className='list-group-item list-group-item-action'
-                >
-                  <img className='avatar-tiny' src={post.author.avatar} />{' '}
-                  <strong>{post.title}</strong>{' '}
-                  <span className='text-muted small'>
-                    {' '}
-                    by {post.author.username} on {formattedDate}{' '}
-                  </span>
-                </Link>
-              );
+              return <Post post={post} key={post._id} />;
             })}
           </div>
         </Fragment>

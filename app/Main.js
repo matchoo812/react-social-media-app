@@ -23,6 +23,7 @@ import Profile from './components/Profile';
 import EditPost from './components/EditPost';
 import NotFound from './components/NotFound';
 import Search from './components/Search';
+import Chat from './components/Chat';
 
 function Main() {
   // retrieve token from local storage (if it exists) and create initial boolean value
@@ -34,6 +35,8 @@ function Main() {
       username: localStorage.getItem('complexAppUsername'),
       avatar: localStorage.getItem('complexAppAvatar'),
       searchIsOpen: false,
+      chatIsOpen: false,
+      unreadChatCount: 0,
     },
   };
 
@@ -54,6 +57,20 @@ function Main() {
         break;
       case 'closeSearch':
         draft.searchIsOpen = false;
+        break;
+      case 'toggleChat':
+        draft.chatIsOpen = !draft.chatIsOpen;
+        break;
+      case 'closeChat':
+        draft.chatIsOpen = false;
+        break;
+      case 'incrementUnreadChatCount':
+        draft.unreadChatCount++;
+        break;
+      case 'clearUnreadChatCount':
+        draft.unreadChatCount = 0;
+        break;
+      default:
         break;
     }
   }
@@ -112,6 +129,7 @@ function Main() {
           >
             <Search />
           </CSSTransition>
+          <Chat />
           <Footer />
         </BrowserRouter>
       </DispatchContext.Provider>

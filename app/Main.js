@@ -49,7 +49,7 @@ function Main() {
       case 'logout':
         draft.loggedIn = false;
         break;
-      case 'flashmessage':
+      case 'flashMessage':
         draft.flashMessages.push(action.value);
         break;
       case 'openSearch':
@@ -87,6 +87,35 @@ function Main() {
       localStorage.removeItem('complexAppAvatar');
     }
   }, [state.loggedIn]);
+
+  // check if token has expired on render
+  useEffect(() => {
+    if (state.loggedIn) {
+      // send axios request if component has already been rendered
+      const ourRequest = axios.CancelToken.source();
+      async function fetchResults() {
+        try {
+          const response = await axios.post(
+            '/checkToken',
+            { token: state.user.token },
+            { cancelToken: ourRequest.token }
+          );
+          if (!response.data) {
+            dispatch({ type: 'logout' });
+            dispatch({
+              type: 'flashMessage',
+              value: 'Your session has expired. Please log in again.',
+            });
+          }
+          console.log(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      fetchResults();
+      return () => ourRequest.cancel();
+    }
+  }, []);
 
   return (
     <StateContext.Provider value={state}>

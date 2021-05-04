@@ -13,8 +13,10 @@ function HeaderLoggedOut(props) {
       const response = await axios.post('/login', { username, password });
       if (response.data) {
         appDispatch({ type: 'login', data: response.data });
+        appDispatch({ type: 'flashMessage', value: 'You have successfully logged in.' });
       } else {
         console.log('Incorrect username or password.');
+        appDispatch({ type: 'flashMessage', value: 'Invalid username or password.' });
       }
     } catch (error) {
       console.log(error);

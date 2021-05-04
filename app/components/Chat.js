@@ -4,10 +4,10 @@ import DispatchContext from '../DispatchContext';
 import { Link } from 'react-router-dom';
 import { useImmer } from 'use-immer';
 import io from 'socket.io-client';
-const socket = io('http://localhost:8080');
 
 function Chat() {
-  // create reference to input on chat form
+  // create references for direct access
+  const socket = useRef(null);
   const chatField = useRef(null);
   const chatLog = useRef(null);
   const appState = useContext(StateContext);
@@ -27,11 +27,15 @@ function Chat() {
   }, [appState.chatIsOpen]);
 
   useEffect(() => {
-    socket.on('chatFromServer', message => {
+    // open socket connection when compnent renders
+    socket.current = io('http://localhost:8080');
+    socket.current.on('chatFromServer', message => {
       setState(draft => {
         draft.chatMessages.push(message);
       });
     });
+    // close socket connection when component is unmounted
+    return () => socket.current.disconnect();
   }, []);
 
   // automatically scroll to bottom (most recent) message
@@ -53,7 +57,10 @@ function Chat() {
   function handleSubmit(e) {
     e.preventDefault();
     // send message to chat server
-    socket.emit('chatFromBrowser', { message: state.fieldValue, token: appState.user.token });
+    socket.current.emit('chatFromBrowser', {
+      message: state.fieldValue,
+      token: appState.user.token,
+    });
 
     // add message to state collection of messages and clear value from input
     setState(draft => {
